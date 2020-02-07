@@ -3,6 +3,7 @@ import React, {
   useState
 } from 'react';
 import PropTypes from 'prop-types';
+import LinearProgress from '@material-ui/core/LinearProgress';
 import {
   Confirm,
   GetReceiverAddress,
@@ -25,7 +26,11 @@ const Wizard = ({ steps, currentStep: initCurrentStep , form }) => {
   const Child = Steps[steps[currentStep]];
 
   return (
-    <Fragment>
+    <div className="wizard">
+      <LinearProgress
+        value={20}
+        variant='determinate'
+      />
       <Child />
       <button
         onClick={() => getNextStep(currentStep - 1)}
@@ -39,7 +44,7 @@ const Wizard = ({ steps, currentStep: initCurrentStep , form }) => {
       type="button">
         Next
       </button>
-    </Fragment>
+    </div>
   );
 };
 

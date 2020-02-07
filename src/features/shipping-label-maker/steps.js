@@ -88,9 +88,6 @@ export const GetReceiverAddress = (props) => {
 
 export const GetWeight = (props) => {
   return (
-    <TextField
-      
-    />
     <div className="steps">Weight</div>
   );
 };

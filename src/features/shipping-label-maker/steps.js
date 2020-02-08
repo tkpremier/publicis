@@ -16,12 +16,14 @@ export const GetSenderAddress = (props) => {
         name="name"
         onChange={handleUpdates}
         required
+        fullWidth
       />
       <TextField
         defaultValue={data.street}
         label="Street"
         name="street"
         required
+        fullWidth
       />
       <TextField
         defaultValue={data.city}
@@ -41,7 +43,6 @@ export const GetSenderAddress = (props) => {
         name="zip"
         required
       />
-      <input type="text" placeholder="name" value={data.name}/>
     </form>
   );
 };

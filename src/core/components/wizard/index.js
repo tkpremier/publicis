@@ -1,8 +1,9 @@
 import React, {
-  Fragment,
   useState
 } from 'react';
 import PropTypes from 'prop-types';
+import Container from '@material-ui/core/Container';
+import LinearProgress from '@material-ui/core/LinearProgress';
 import {
   Confirm,
   GetReceiverAddress,
@@ -10,7 +11,7 @@ import {
   GetShippingOption,
   GetWeight
 } from '../../../features/shipping-label-maker/steps';
-
+import '../../../app.css';
 const Steps = {
   Confirm,
   GetReceiverAddress,
@@ -25,7 +26,14 @@ const Wizard = ({ steps, currentStep: initCurrentStep , form }) => {
   const Child = Steps[steps[currentStep]];
 
   return (
-    <Fragment>
+    <Container
+      fixed
+      maxWidth="sm"
+    >
+      <LinearProgress
+        value={20}
+        variant='determinate'
+      />
       <Child />
       <button
         onClick={() => getNextStep(currentStep - 1)}
@@ -39,7 +47,7 @@ const Wizard = ({ steps, currentStep: initCurrentStep , form }) => {
       type="button">
         Next
       </button>
-    </Fragment>
+    </Container>
   );
 };
 

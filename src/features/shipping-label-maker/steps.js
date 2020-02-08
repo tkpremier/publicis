@@ -1,9 +1,10 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState, } from 'react';
 import TextField from '@material-ui/core/TextField';
 import { WizardContext } from './';
 
 export const GetSenderAddress = (props) => {
-  const { from } = useContext(WizardContext);
+  const { formContext, handleUpdates } = useContext(WizardContext);
+  const { from } = formContext;
   const data = from;
   return (
     <form
@@ -13,6 +14,7 @@ export const GetSenderAddress = (props) => {
         defaultValue={data.name}
         label="Name"
         name="name"
+        onChange={handleUpdates}
         required
       />
       <TextField
@@ -45,7 +47,8 @@ export const GetSenderAddress = (props) => {
 };
 
 export const GetReceiverAddress = (props) => {
-  const { to } = useContext(WizardContext);
+  const { formContext, handleUpdates } = useContext(WizardContext);
+  const { to } = formContext;
   const data = to;
   return (
     <form
@@ -55,6 +58,7 @@ export const GetReceiverAddress = (props) => {
         defaultValue={data.name}
         label="Name"
         name="name"
+        onChange={handleUpdates}
         required
       />
       <TextField
@@ -87,17 +91,45 @@ export const GetReceiverAddress = (props) => {
 };
 
 export const GetWeight = (props) => {
+  const { formContext, handleUpdates } = useContext(WizardContext);
+  const { weight } = formContext;
   return (
     <TextField
-      
+      defaultValue={weight}
+      label="Weight"
+      name="weight"
+      onChange={handleUpdates}
+      required
     />
-    <div className="steps">Weight</div>
   );
 };
 
 export const GetShippingOption = (props) => {
+  const { formContext, handleUpdates } = useContext(WizardContext);
+  const { shippingOption } = formContext;
+  const ShippingOption = {
+    ground: 1,
+    priority: 2
+  };
   return (
-    <div className="steps">Shipping Option</div>
+    <div className="shipping-options">
+      <TextField
+        select
+        label="Shipping Options"
+        helperText="Please select a shipping option"
+        defaultValue={shippingOption}
+        onChange={handleUpdates}
+      >
+       {Object.entries(ShippingOption).map(([key, val], i) => {
+         return (
+           <option key={key} value={val}>
+             {key}
+           </option>
+         );
+       })} 
+      </TextField>
+      <span className="steps">Shipping Option</span>
+    </div>
   );
 };
 

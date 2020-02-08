@@ -1,7 +1,7 @@
 import React, { createContext, useEffect, useState } from 'react';
 import Wizard from '../../core/components/wizard';
 
-const wizardContext = {
+const defaultContext = {
     from: {
         name: "Tommy Kim",
         street: "",
@@ -21,7 +21,7 @@ const wizardContext = {
     weight: 2
 };
 
-export const WizardContext = createContext(wizardContext);
+export const WizardContext = createContext(defaultContext);
 
 const defaultState = {
     steps: [
@@ -35,8 +35,15 @@ const defaultState = {
 }
 
 const ShippingLabelMaker = () => {
+  const [ formContext, updateContext ] = useState(defaultContext);
+  const handleUpdates = (e) => {
+    console.log(e.target.value);
+    // if (e.target.value) {
+    //   updateContext(e.target.value);
+    // }
+  }
     return (
-        <WizardContext.Provider value={wizardContext}>
+        <WizardContext.Provider value={{ formContext, handleUpdates }}>
             <Wizard {...defaultState} />
         </WizardContext.Provider>
     );

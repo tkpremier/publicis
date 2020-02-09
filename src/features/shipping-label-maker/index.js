@@ -24,14 +24,15 @@ const defaultContext = {
 export const WizardContext = createContext(defaultContext);
 
 const defaultState = {
-    steps: [
-        "GetSenderAddress",
-        "GetReceiverAddress",
-        "GetWeight",
-        "GetShippingOption",
-        "Confirm"
-    ],
-    currentStep: 0
+  currentStep: 0,
+  steps: [
+      "GetSenderAddress",
+      "GetReceiverAddress",
+      "GetWeight",
+      "GetShippingOption",
+      "Confirm"
+  ],
+  stepsCompleted: []
 }
 
 const ShippingLabelMaker = () => {
@@ -44,7 +45,7 @@ const ShippingLabelMaker = () => {
   }
     return (
         <WizardContext.Provider value={{ formContext, handleUpdates }}>
-            <Wizard {...defaultState} />
+            <Wizard {...defaultState} requiredKeys={Object.keys(defaultContext)} />
         </WizardContext.Provider>
     );
 };

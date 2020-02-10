@@ -1,4 +1,4 @@
-import React, { useContext, useState, Fragment, } from 'react';
+import React, { useContext, createRef, useRef, useState, Fragment, } from 'react';
 import serialize from 'form-serialize';
 import TextField from '@material-ui/core/TextField';
 import { WizardContext } from './';
@@ -11,29 +11,22 @@ const addressKeys = [
   'zip'
 ];
 const GetSenderAddress = (props) => {
+  const formRef = createRef();
+
   const {
     getNextStep,
-    name,
-    setValidate } = props;
+    name
+    } = props;
   const { formContext, handleUpdates } = useContext(WizardContext);
   const { from } = formContext;
   const data = from;
-  const handleSubmit = (e) => {
-    console.log('e.currentTarget: ', e.currentTarget);
-    e.preventDefault();
-    const serialized = serialize(e.target, { hash: true });
-    const keys = Object.keys(serialized);
-    if (keys.length === addressKeys.length) {
-      setValidate(name);
-    }
-  }
   return (
     <form
       data={data}
       name={name}
-      onSubmit={handleSubmit}
+      ref={formRef}
     >
-      <h2>Enter the receiver's address</h2>
+      <h2>Enter the Sender's address</h2>
       <TextField
         defaultValue={data.name}
         label="Name"
@@ -68,13 +61,14 @@ const GetSenderAddress = (props) => {
         required
       />
       <button
-        // onClick={() => getNextStep(4)}
-        type="submit"
-      >
-        Prev
-      </button>
-      <button
-        onClick={() => getNextStep(1)}
+        onClick={() => {
+          console.log('from: ', serialize(formRef.current));
+          const data = serialize(formRef.current, { hash: true });
+          if (Object.keys(data).length === addressKeys.length) {
+            handleUpdates({ 'from': data });
+            getNextStep(1);
+          }        
+        }}
         type="submit"
       >
         Next
@@ -84,28 +78,21 @@ const GetSenderAddress = (props) => {
 };
 
 const GetReceiverAddress = (props) => {
+  const formRef = createRef();
   const {
     getNextStep,
-    name,
-    setValidate } = props;
+    name
+  } = props;
   const { formContext, handleUpdates } = useContext(WizardContext);
   const { to } = formContext;
   const data = to;
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const serialized = serialize(e.target, { hash: true });
-    const keys = Object.keys(serialized);
-    if (keys.length === addressKeys.length) {
-      setValidate(name);
-    }
-  }
   return (
     <form
       data={data}
       name={name}
-      onSubmit={handleSubmit}
+      ref={formRef}
     >
-      <h2>Enter the sender's address</h2>
+      <h2>Enter the receiver's address</h2>
       <TextField
         defaultValue={data.name}
         label="Name"
@@ -140,12 +127,30 @@ const GetReceiverAddress = (props) => {
       <button
         data-dir="prev"
         type="submit"
-        onClick={() => { getNextStep(0);}}
+        onClick={() => {
+          const data = serialize(formRef.current, { hash: true });
+          console.log('to: ', data);
+          if (Object.keys(data).length === addressKeys.length) {
+            handleUpdates({
+              type: 'GET_NEXT_STEP',
+              payload: { 'to': data, nextStep: 0 }
+            });
+          }       
+        }}
       >
         Prev
       </button>
       <button
-        onClick={(e) => { getNextStep(2);}}
+        onClick={() => {
+          const data = serialize(formRef.current, { hash: true });
+          console.log('to: ', data);
+          if (Object.keys(data).length === addressKeys.length) {
+            handleUpdates({
+              type: 'GET_NEXT_STEP',
+              payload: { 'to': data, nextStep: 2 }
+            });
+          }       
+        }}
         type="submit"
       >
         Next
@@ -155,10 +160,11 @@ const GetReceiverAddress = (props) => {
 };
 
 const GetWeight = (props) => {
+  const ref = createRef();
   const {
     getNextStep,
-    name,
-    setValidate } = props;
+    name
+     } = props;
   const { formContext, handleUpdates } = useContext(WizardContext);
   const { weight } = formContext;
   return (
@@ -167,19 +173,41 @@ const GetWeight = (props) => {
         defaultValue={weight}
         label="Weight"
         name={name}
-        onChange={setValidate}
         required
-        
+        inputRef={ref}
+        type="number"
       />
       <button
         type="button"
-        onClick={() => getNextStep(1)}
+        onClick={() => {
+          console.log('ref: ', ref.current);
+          if (!isNaN(parseInt(ref.current.value, 10))) {
+            handleUpdates({
+              type: 'GET_NEXT_STEP',
+              payload: {
+                'weight': parseInt(ref.current.value, 10),
+                nextStep: 1
+              }
+            })
+          }
+        }}
       >
         Prev
       </button>
       <button
         type="button"
-        onClick={() => getNextStep(3)}
+        onClick={() => {
+          console.log(ref.current.value);
+          if (!isNaN(parseInt(ref.current.value, 10))) {
+            handleUpdates({
+              type: 'GET_NEXT_STEP',
+              payload: {
+                'weight': parseInt(ref.current.value, 10),
+                nextStep: 3
+              }
+            })
+          }
+        }}
       >
         Next
       </button>
@@ -188,7 +216,8 @@ const GetWeight = (props) => {
 };
 
 const GetShippingOption = (props) => {
-  const { getNextStep, name, setValidate } = props;
+  const { getNextStep, name } = props;
+  const ref = createRef();
   const { formContext, handleUpdates } = useContext(WizardContext);
   const { shippingOption } = formContext;
   const ShippingOption = {
@@ -199,12 +228,12 @@ const GetShippingOption = (props) => {
     <Fragment>
       <div className="shipping-options">
         <TextField
-          name={props.name}
+          name={name}
           select
           label="Shipping Options"
           helperText="Please select a shipping option"
           defaultValue={shippingOption}
-          onChange={setValidate}
+          inputRef={ref}
         >
         {Object.entries(ShippingOption).map(([key, val], i) => {
           return (
@@ -218,13 +247,31 @@ const GetShippingOption = (props) => {
       </div>
       <button
         type="button"
-        onClick={() => getNextStep(1)}
+        onClick={() => {
+          handleUpdates({
+            type: 'GET_NEXT_STEP',
+            payload: {
+              shippingOption: parseInt(ref.current.value, 10),
+              nextStep: 1
+            }
+          })
+        }}
       >
         Prev
       </button>
       <button
         type="button"
-        onClick={() => getNextStep(3)}
+        onClick={() => {
+          handleUpdates(
+            {
+              type: 'GET_NEXT_STEP',
+              payload: {
+                shippingOption: parseInt(ref.current.value, 10),
+                nextStep: 3
+              }
+            }
+          );
+        }}
       >
         Next
       </button>

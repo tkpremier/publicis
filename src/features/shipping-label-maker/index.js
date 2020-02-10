@@ -17,7 +17,6 @@ const defaultContext = {
         state: "",
         zip: ""
     },
-    updateForm: () => {},
     weight: 2
 };
 
@@ -37,15 +36,22 @@ const defaultState = {
 
 const ShippingLabelMaker = () => {
   const [ formContext, updateContext ] = useState(defaultContext);
-  const handleUpdates = (e) => {
-    console.log(e.target.value);
-    // if (e.target.value) {
-    //   updateContext(e.target.value);
-    // }
+
+  const handleUpdates = (value) => {
+    console.log('value: ', value);
+    if (value) {
+      updateContext({
+        ...formContext,
+        ...value
+        });
+    }
   }
+  console.log('formContext: ', formContext);
     return (
         <WizardContext.Provider value={{ formContext, handleUpdates }}>
-            <Wizard {...defaultState} requiredKeys={Object.keys(defaultContext)} />
+            <Wizard
+            {...defaultState}
+            requiredKeys={Object.keys(defaultContext)} />
         </WizardContext.Provider>
     );
 };

@@ -1,4 +1,5 @@
 import React, {
+  useReducer,
   useState
 } from 'react';
 import PropTypes from 'prop-types';
@@ -7,22 +8,24 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import Steps from '../../../features/shipping-label-maker/steps';
 import '../../../app.css';
 
+const Names = [
+  'to',
+  'from',
+  'weight',
+  'shippingOption'
+];
+const reducer = (state, action) => {
+  switch(action.type) {
 
+    default: return state;
+  }
+};
 const Wizard = ({ steps,
   currentStep: initCurrentStep,
-  requiredKeys,
-  stepsCompleted: initStepsCompleted
 }) => {
-  const [ currentStep, getNextStep ] = useState(initCurrentStep);
-  const [ stepsCompleted, validateStep ] = useState(initStepsCompleted);
-
+  // state = { currentStep: int, stepsCompleted: []}
+  const [ state, dispatch ] = useReducer(reducer, { currentStep: 0, stepsCompleted: [] });
   const Child = Steps[steps[currentStep]];
-  const handleValidate = (name) => {
-    console.log('name: ', name);
-    if ((stepsCompleted.indexOf(name) === -1) && (requiredKeys.indexOf(name) > -1)) {
-      validateStep([ ...stepsCompleted, name]);
-    }
-  }
   return (
   <Container    
       fixed
@@ -30,13 +33,12 @@ const Wizard = ({ steps,
     >
       <h2>Shipping Label Maker</h2>
       <LinearProgress
-        value={20}
+        value={}
         variant='determinate'
       />
       <Child
         name={steps[currentStep]}
-        getNextStep={getNextStep}
-        setValidate={handleValidate}
+        getNextStep={dispatch}
       />
     </Container>
   );

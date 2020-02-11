@@ -5,27 +5,56 @@ import React, {
 import PropTypes from 'prop-types';
 import Container from '@material-ui/core/Container';
 import LinearProgress from '@material-ui/core/LinearProgress';
-import Steps from '../../../features/shipping-label-maker/steps';
 import '../../../app.css';
 
-const Names = [
-  'to',
+const defaultState = {
+  currentStep: 0,
+  stepsCompleted: []
+}
+
+const names = [
   'from',
+  "to",
   'weight',
   'shippingOption'
 ];
 const reducer = (state, action) => {
   switch(action.type) {
-
+    case 'GET_NEXT_STEP': return {
+      ...state,
+      ...action.payload,
+      currentStep: action.payload.nextStep,
+      stepsCompleted: state.stepsCompleted.indexOf(action.payload.stepCompleted) === -1 && names.indexOf(action.payload.stepCompleted > -1) 
+        ? [ ...state.stepsCompleted, action.payload.stepCompleted]
+        : state.stepsCompleted
+    };
     default: return state;
   }
 };
-const Wizard = ({ steps,
-  currentStep: initCurrentStep,
+const Wizard = ({
+  onComplete,
+  steps,
+  wizardContext
 }) => {
   // state = { currentStep: int, stepsCompleted: []}
-  const [ state, dispatch ] = useReducer(reducer, { currentStep: 0, stepsCompleted: [] });
-  const Child = Steps[steps[currentStep]];
+  const [ state, dispatch ] = useReducer(reducer, {
+    ...defaultState,
+    ...wizardContext
+  });
+  const { currentStep, stepsCompleted } = state;
+  const stepNames = Object.keys(steps);
+  const Child = steps[stepNames[currentStep]];
+  const propertyName = names[currentStep];
+  const getData = (state, name) => {
+    switch(name) {
+      case 'Confirm':
+        return state;
+      case 'GetShippingOption':
+        return { weight: state.weight, shippingOption: state.shippingOption };
+      default:
+        return state[propertyName]
+    }
+  }
   return (
   <Container    
       fixed
@@ -33,12 +62,14 @@ const Wizard = ({ steps,
     >
       <h2>Shipping Label Maker</h2>
       <LinearProgress
-        value={}
+        value={stepsCompleted.length * 25}
         variant='determinate'
       />
       <Child
-        name={steps[currentStep]}
+        name={propertyName}
+        data={getData(state, stepNames[currentStep])}
         getNextStep={dispatch}
+        onComplete={onComplete}
       />
     </Container>
   );

@@ -1,5 +1,6 @@
-import React, { createContext, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Wizard from '../../core/components/wizard';
+import Steps from './steps';
 
 const defaultContext = {
     from: {
@@ -20,39 +21,22 @@ const defaultContext = {
     weight: 2
 };
 
-export const WizardContext = createContext(defaultContext);
-
-const defaultState = {
-  currentStep: 0,
-  steps: [
-      "GetSenderAddress",
-      "GetReceiverAddress",
-      "GetWeight",
-      "GetShippingOption",
-      "Confirm"
-  ],
-  stepsCompleted: []
-}
-
 const ShippingLabelMaker = () => {
-  const [ formContext, updateContext ] = useState(defaultContext);
-
-  const handleUpdates = (value) => {
-    console.log('value: ', value);
-    if (value) {
-      updateContext({
-        ...formContext,
-        ...value
-        });
-    }
-  }
-  console.log('formContext: ', formContext);
-    return (
-        <WizardContext.Provider value={{ formContext, handleUpdates }}>
-            <Wizard
-            {...defaultState}
-            requiredKeys={Object.keys(defaultContext)} />
-        </WizardContext.Provider>
+  const [ complete, setComplete ] = useState(false);
+  const [ data, setData ] = useState(defaultContext);
+  const handleComplete = completeData => {
+    setComplete(true);
+    setData(completeData);
+  };
+  return complete
+    ? (
+      <p>complete</p>
+    ) : (
+      <Wizard
+        onComplete={handleComplete}
+        steps={Steps}
+        wizardContext={data}
+      />
     );
 };
 
